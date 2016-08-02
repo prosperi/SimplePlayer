@@ -51,9 +51,13 @@ public class Player {
 	}
 	
 	public static void play(){
-		if(mPlayer != null && mPlayer.getStatus().equals(Status.PAUSED)){
+		if(mPlayer != null && mPlayer.getStatus().toString().equals("PAUSED")){
+			System.out.println("Here");
 			mPlayer.play();
+		}else if(mPlayer == null){
+			loadMPlayer().play();
 		}else{
+			mPlayer.stop();
 			loadMPlayer().play();
 		}
 	}
