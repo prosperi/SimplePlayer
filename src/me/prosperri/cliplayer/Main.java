@@ -9,19 +9,30 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 public class Main extends Application{
+	private static Player player;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 
 		Scanner in = new Scanner(System.in);
-		Player player = new Player();
+		player = new Player();
+		PlayerCmd playerCmd = new PlayerCmd();
 		
 		System.out.println("Insert playlist destination:");
 		player.loadPlaylist(in.nextLine());
-		System.out.println("Insert Command:");
-		executeCommand(player, in);	
 		
+		try {
+			playerCmd.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void playerCmdListener(String cmd){
+		player.executeCommand(cmd);
 	}
 	
 
@@ -32,23 +43,6 @@ public class Main extends Application{
 
 	}
 	
-	public static void executeCommand(Player player, Scanner in){
-		
-		switch(in.nextLine()){
-		case "play":
-			player.play();
-			break;
-		case "pause":
-			player.pause();
-			break;
-		case "next":
-			player.next();
-			break;
-		case "prev":
-			player.previous();
-			break;
-		}
-
-	}
+	
 
 }

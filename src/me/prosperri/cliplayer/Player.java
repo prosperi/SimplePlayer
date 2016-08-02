@@ -10,9 +10,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class Player {
-	private ArrayList<File> playlist;
+	private static ArrayList<File> playlist;
 	private static MediaPlayer mPlayer;
-	private int current;
+	public static int current;
 	
 	public Player(){
 		this.playlist = new ArrayList<File>();
@@ -28,7 +28,7 @@ public class Player {
 		}		
 	}
 	
-	private Media loadMedia(){
+	private static Media loadMedia(){
 		Media song;
 		if(current < playlist.size() && current >= 0){
 			song = new Media(playlist.get(current).toURI().toString());
@@ -42,7 +42,7 @@ public class Player {
 		return song;
 	}
 	
-	private MediaPlayer loadMPlayer(){
+	private static MediaPlayer loadMPlayer(){
 		mPlayer = new MediaPlayer(loadMedia());
 		mPlayer.setOnEndOfMedia(()->{
 			next();
@@ -50,7 +50,7 @@ public class Player {
 		return mPlayer;
 	}
 	
-	public void play(){
+	public static void play(){
 		if(mPlayer != null && mPlayer.getStatus().equals(Status.PAUSED)){
 			mPlayer.play();
 		}else{
@@ -58,17 +58,36 @@ public class Player {
 		}
 	}
 	
-	public void next(){
+	public static void next(){
 		current++;
 		play();
 	}
 	
-	public void previous(){
+	public static void previous(){
 		current--;
 		play();
 	}
 	
-	public void pause(){
+	public static void pause(){
 		mPlayer.pause();
 	}
+	
+	public static void executeCommand(String cmd){
+		switch(cmd){
+		case "play":
+			play();
+			break;
+		case "pause":
+			pause();
+			break;
+		case "next":
+			next();
+			break;
+		case "prev":
+			previous();
+			break;
+		}
+
+	}
+	
 }
