@@ -12,11 +12,13 @@ import javafx.scene.media.MediaPlayer;
 public class Player {
 	private static ArrayList<File> playlist;
 	private static MediaPlayer mPlayer;
-	public static int current;
+	private static double volume;
+	private static int current;
 	
 	public Player(){
 		this.playlist = new ArrayList<File>();
 		this.mPlayer = null;
+		this.volume = 0.5;
 		this.current = 0;
 	}
 	
@@ -44,6 +46,7 @@ public class Player {
 	
 	private static MediaPlayer loadMPlayer(){
 		mPlayer = new MediaPlayer(loadMedia());
+		mPlayer.setVolume(volume);
 		mPlayer.setOnEndOfMedia(()->{
 			next();
 		});
@@ -89,6 +92,19 @@ public class Player {
 			break;
 		case "prev":
 			previous();
+			break;
+		default:
+			if(cmd.matches("^[+-]\\d{1,2}$")){
+				if(cmd.charAt(0) == '+'){
+					volume += Double.parseDouble(cmd.substring(1, 3)) / 100;
+					mPlayer.setVolume(volume);
+					System.out.println("Volume: " + Math.ceil(volume * 100));
+				}else{
+					volume -= Double.parseDouble(cmd.substring(1, 3)) / 100;
+					mPlayer.setVolume(volume);
+					System.out.println("Volume: " + Math.ceil(volume * 100));
+				}
+			}
 			break;
 		}
 
