@@ -14,12 +14,14 @@ public class Player {
 	private static MediaPlayer mPlayer;
 	private static double volume;
 	private static int current;
+	private static int rate;
 	
 	public Player(){
 		this.playlist = new ArrayList<File>();
 		this.mPlayer = null;
 		this.volume = 0.5;
 		this.current = 0;
+		this.rate = 0;
 	}
 	
 	public void loadPlaylist(String path) throws FileNotFoundException{
@@ -48,20 +50,25 @@ public class Player {
 		mPlayer = new MediaPlayer(loadMedia());
 		mPlayer.setVolume(volume);
 		mPlayer.setOnEndOfMedia(()->{
-			next();
+			if(rate > 0){
+				rate--;
+				play();
+			}else{
+				next();
+			}
 		});
 		return mPlayer;
 	}
 	
 	public static void play(){
 		if(mPlayer != null && mPlayer.getStatus().toString().equals("PAUSED")){
-			System.out.println("Here");
 			mPlayer.play();
 		}else if(mPlayer == null){
 			loadMPlayer().play();
 		}else{
 			mPlayer.stop();
 			loadMPlayer().play();
+			System.out.println(mPlayer.getMedia().getSource().toString());
 		}
 	}
 	
@@ -77,6 +84,12 @@ public class Player {
 	
 	public static void pause(){
 		mPlayer.pause();
+	}
+	
+	public static void repeat(int index){
+		current = index;
+		rate--;
+		play();
 	}
 	
 	public static void executeCommand(String cmd){
@@ -96,14 +109,23 @@ public class Player {
 		default:
 			if(cmd.matches("^[+-]\\d{1,2}$")){
 				if(cmd.charAt(0) == '+'){
-					volume += Double.parseDouble(cmd.substring(1, 3)) / 100;
-					mPlayer.setVolume(volume);
-					System.out.println("Volume: " + Math.ceil(volume * 100));
+					volume += Double.parseDouble(cmd.substring(1, cmd.length())) / 100;
 				}else{
-					volume -= Double.parseDouble(cmd.substring(1, 3)) / 100;
-					mPlayer.setVolume(volume);
-					System.out.println("Volume: " + Math.ceil(volume * 100));
+					volume -= Double.parseDouble(cmd.substring(1, cmd.length())) / 100;
 				}
+				
+				if(volume > 100){ 
+					volume = 100; 
+				}else if(volume < 0){ 
+					volume = 0; 
+				}
+				
+				mPlayer.setVolume(volume);
+				System.out.println("Volume: " + Math.round(volume * 100));
+			}else if(cmd.matches("^repeat\\s+-i\\s+\\d+\\s+-r\\s+\\d+$")){
+				String[] args = cmd.split("[^0-9]+");
+				rate = Integer.parseInt(args[2]);
+				repeat(Integer.parseInt(args[1]));
 			}
 			break;
 		}
