@@ -2,7 +2,11 @@ package me.prosperri.cliplayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import javafx.animation.Animation.Status;
@@ -24,12 +28,11 @@ public class Player {
 		this.rate = 0;
 	}
 	
-	public void loadPlaylist(String path) throws FileNotFoundException{
+	public void loadPlaylist(String path) throws IOException{
 		playlist.clear();
-		Scanner playlistReader = new Scanner(new File(System.getProperty("user.home"), path));
-		while(playlistReader.hasNextLine()){
-			playlist.add(new File(System.getProperty("user.home"), playlistReader.nextLine()));
-		}		
+	    PlaylistLoader pLoader = new PlaylistLoader();
+	    Files.walkFileTree(Paths.get(System.getProperty("user.home"), path), pLoader);
+	    playlist = pLoader.getPlaylist();
 	}
 	
 	private static Media loadMedia(){
